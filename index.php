@@ -17,6 +17,11 @@
     <?php
         $erreurs = array();
 
+        if(isset($_COOKIE["loggedin"])) 
+        {
+            header("Refresh:0; url=run.php");
+        }
+
         if (!empty($_POST)){
             $username = filter_input(INPUT_POST, 'username', FILTER_SANITIZE_EMAIL);
             $pwd = filter_input(INPUT_POST, 'pwd', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -25,15 +30,18 @@
 
             #setup login
             try{$MUser = new MUser($config, $username, $pwd);}
-            catch(Exception $e){ $erreurs[] = $e; }
+            catch(Exception $e){ $erreurs[] = "Le compte n'existe pas ou le mot de passe est incorrect."; }
 
             if (empty($erreurs)){
                 setcookie("loggedin", $MUser->getId(), time()+60*60*24);
+
+                header("Refresh:0; url=run.php");
             }
             else
             {
             require_once 'sections/retroaction.php';
             }
+
         }
         ?>
 
